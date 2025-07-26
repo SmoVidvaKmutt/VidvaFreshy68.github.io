@@ -82,7 +82,7 @@ button:hover {
     margin-left: auto;
     margin-right: auto;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    text-align: left;
+    text-align: center;
 }
 
 /* --- Footer Styling --- */
@@ -91,6 +91,7 @@ footer {
     bottom: 0;       /* 2. จัดให้อยู่ชิดขอบล่างสุด */
     left: 0;         /* 3. จัดให้อยู่ชิดขอบซ้าย */
     width: 100%;     /* 4. ทำให้ความกว้างเต็ม 100% ของหน้าจอ */
+    height: 70%;
     z-index: -1;     /* 5. ส่งไปอยู่ด้านหลังเนื้อหาอื่น */
 }
 
