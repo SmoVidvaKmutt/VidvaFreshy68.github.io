@@ -77,7 +77,7 @@ function performSearch() {
         }
         
         if (phoneMatch) {
-            searchMethodMessage = `ผลการค้นหาจากเบอร์โทรศัพท์`;
+            searchMethodMessage ;
         } else if (studentId === cleanQuery) {
             searchMethodMessage = `ผลการค้นหาจากรหัสนักศึกษา`;
         } else if (fullName === lowerCaseQuery) {
