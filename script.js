@@ -29,25 +29,35 @@ document.getElementById('query').addEventListener('keypress', function(event) {
     }
 });
 
-// --- 2. Search Function (replaces google.script.run) ---
+// --- 2. Search Function (Handles leading '0' on phone numbers) ---
 function performSearch() {
-    // **[แก้ไข]** แปลงคำค้นหาให้เป็นตัวพิมพ์เล็กและลบช่องว่างทั้งหมด
-    const query = document.getElementById('query').value.toLowerCase().replace(/\s/g, '');
-    
-    if (!query) {
-        alert("กรุณากรอกข้อมูลก่อนค้นหา (Please enter Student ID or Name)");
+    const rawQuery = document.getElementById('query').value.trim();
+    if (!rawQuery) {
+        alert("กรุณากรอกข้อมูลเพื่อค้นหา (รหัสนักศึกษา, ชื่อ หรือเบอร์โทรศัพท์)");
         return;
     }
 
+    // Prepare different query formats for searching
+    const queryForIdsAndPhone = rawQuery.replace(/\s/g, '');
+    const queryForNames = queryForIdsAndPhone.toLowerCase();
+    
+    // [เพิ่ม] สร้างตัวแปรสำหรับค้นหาเบอร์โทรที่ไม่มีเลข 0 นำหน้า
+    let queryForPhoneWithoutZero = queryForIdsAndPhone;
+    if (queryForIdsAndPhone.startsWith('0')) {
+        queryForPhoneWithoutZero = queryForIdsAndPhone.substring(1);
+    }
+
     const results = studentData.filter(student => {
-        // **[แก้ไข]** แปลงรหัสนักศึกษาจากข้อมูลให้เป็นสตริงและลบช่องว่าง
+        // Prepare all searchable fields from the student data
         const studentId = String(student.student_id).replace(/\s/g, '');
-
-        // **[แก้ไข]** รวมชื่อ-นามสกุล, แปลงเป็นตัวพิมพ์เล็ก, และลบช่องว่าง
         const fullName = (`${student.first_name}${student.last_name}`).toLowerCase().replace(/\s/g, '');
+        const phoneNumber = String(student.phone).replace(/\s/g, '');
 
-        // **[แก้ไข]** เปลี่ยนจาก .includes() เป็น === เพื่อเปรียบเทียบแบบตรงกันเท่านั้น
-        return studentId === query || fullName === query;
+        // [แก้ไข] เพิ่มเงื่อนไขการค้นหาเบอร์โทรศัพท์ที่ตัดเลข 0 ออกแล้ว
+        return studentId === queryForIdsAndPhone || 
+               fullName === queryForNames || 
+               phoneNumber === queryForIdsAndPhone || 
+               phoneNumber === queryForPhoneWithoutZero;
     });
 
     showResults(results);
