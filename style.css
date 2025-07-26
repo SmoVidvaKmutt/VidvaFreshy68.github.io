@@ -11,6 +11,7 @@ body {
     text-align: center;
     padding: 2em;
     padding-bottom: 20vh; /* Make space for the footer */
+    box-sizing: border-box; /* Ensures padding doesn't add to total width */
 }
 
 @keyframes gradientBG {
@@ -19,14 +20,17 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-.logo {
-    width: 100px;
-    margin-bottom: 1em;
+/* Added style for the main content wrapper */
+.main-container img {
+    max-height: 120px;
+    vertical-align: middle;
 }
 
 h1 {
     font-family: 'Orbitron', sans-serif;
     font-size: 2.2em;
+    line-height: 1.3;
+    margin-top: 0.5em;
     margin-bottom: 1em;
     text-shadow: 2px 2px #00000055;
 }
@@ -72,7 +76,7 @@ button:hover {
     margin-right: auto;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     animation: fadeIn 1s ease-in-out;
-    text-align: left; /* Align text inside result card to the left */
+    text-align: left;
 }
 
 @keyframes fadeIn {
@@ -85,20 +89,48 @@ p {
     font-size: 16px;
 }
 
+/* [แก้ไข] แก้ไข Footer ให้มีความสูงที่เหมาะสม */
 footer div {
     position: fixed;
-    bottom: 0px;
+    bottom: 0;
     left: 0;
     width: 100%;
-    height: 60%;
+    height: 20vh; /* ปรับความสูงเป็น 20% ของความสูงหน้าจอ (vh) */
     z-index: -1;
 }
 
+
+/* --- Responsive Styles for Mobile --- */
 @media screen and (max-width: 600px) {
+    /* [ปรับปรุง] ลด padding รอบนอกเพื่อให้มีพื้นที่แสดงผลมากขึ้น */
+    body {
+        padding: 1em;
+        padding-bottom: 20vh; /* คงระยะห่างจาก footer ไว้ */
+    }
+
+    /* [ปรับปรุง] ลดขนาดโลโก้ */
+    .main-container img {
+        max-height: 90px;
+    }
+
+    /* [ปรับปรุง] ลดขนาดฟอนต์หัวข้อและปรับระยะห่าง */
+    h1 {
+        font-size: 1.6em; /* ลดขนาดฟอนต์ให้พอดีกับมือถือ */
+        margin-bottom: 0.8em;
+    }
+
+    /* [คงเดิม] ทำให้ input และ button กว้างขึ้น */
     input, button {
         width: 90%;
     }
-    h1 {
-        font-size: 1.8em;
+    
+    /* [ปรับปรุง] ลด padding ภายในการ์ดผลลัพธ์ */
+    .result {
+        padding: 15px;
+    }
+    
+    /* [ปรับปรุง] ลดขนาดฟอนต์ของข้อความผลลัพธ์เล็กน้อย */
+    .result p {
+        font-size: 15px;
     }
 }

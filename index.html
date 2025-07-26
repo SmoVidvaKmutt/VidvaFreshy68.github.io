@@ -11,21 +11,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Orbitron:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div style="text-align: center;">
+    <div class="main-container">
         <img src="https://i.postimg.cc/mhfVf03V/image.png"
              alt="โลโก้คณะวิศวกรรมศาสตร์"
              style="vertical-align: middle; max-height: 120px;">
+        
+        <h1>Welcome To The Pirates’ Odyssey : The Ten-Islands</h1>
+
+        <input type="text" id="query" placeholder="กรอกรหัสนักศึกษา (Input Your Student ID)"><br>
+        
+        <button onclick="performSearch()">ค้นหา (Search)</button>
+        
+        <div id="results-container"></div>
     </div>
-    <div></div>
-    <h1>Welcome To The "Engineering Orientation Academic Year 2025"</h1>
-
-    <input type="text" id="query" placeholder="กรอกรหัสนักศึกษา Input Your Student ID">
-    <br>
-    <button onclick="performSearch()">ค้นหา (Search)</button>
-
-    <div id="results-container"></div>
-    </body>
-    <div>
     <footer>
         <div>
             <img src="https://i.postimg.cc/VLHqvt08/4.png"
