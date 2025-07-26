@@ -1,7 +1,6 @@
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Orbitron:wght@600&display=swap');
 
-/* --- Base Styles --- */
 body {
     margin: 0;
     font-family: 'Prompt', sans-serif;
@@ -10,11 +9,9 @@ body {
     color: white;
     padding: 2em;
     padding-bottom: 30vh; /* เพิ่ม padding ด้านล่างเพื่อไม่ให้เนื้อหาถูก footer บัง */
-    box-sizing: border-box;
-    /* animation: gradientBG 15s ease infinite; */ /* เปิดใช้งานถ้าต้องการให้พื้นหลังเคลื่อนไหว */
+    box-sizing: border-box; /* Ensures padding doesn't add to total width */
 }
 
-/* --- Keyframe Animations --- */
 @keyframes gradientBG {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -26,7 +23,7 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Main Content Layout --- */
+/* Added style for the main content wrapper */
 .main-container {
     display: flex;
     flex-direction: column; /* จัดเรียงจากบนลงล่าง */
@@ -53,12 +50,11 @@ h1 {
 }
 
 h2 {
-    font-size: 1.8em;
-    margin-top: 0.2em;
+    font-size: 2.2em;
+    margin-top: 0.1em;
     margin-bottom: 1em;
 }
 
-/* --- Form Elements --- */
 input {
     padding: 12px;
     width: 80%;
@@ -69,6 +65,7 @@ input {
     margin-bottom: 1em;
     outline: none;
     text-align: center;
+    font-weight: bold;
 }
 
 button {
@@ -84,13 +81,13 @@ button {
 }
 
 button:hover {
-    background: #ffd6d6;
+    background: #884343;
+    color: white;
 }
 
-/* --- Results Display --- */
 #results-container {
     margin-top: 2em;
-    width: 100%; /* ทำให้ container กว้างเต็มพื้นที่ของ main-container */
+    width: 100%;
 }
 
 .result {
@@ -103,22 +100,118 @@ button:hover {
     margin-right: auto;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     animation: fadeIn 1s ease-in-out;
-    text-align: left; /* บังคับให้ข้อความในกล่องนี้ชิดซ้าย */
+    text-align: center;
 }
 
-/* --- Footer Styling --- */
-footer {
+p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+/* [แก้ไข] แก้ไข Footer ให้มีความสูงที่เหมาะสม */
+footer div {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
+    height: 20vh; /* ปรับความสูงเป็น 20% ของความสูงหน้าจอ (vh) */
     z-index: -1;
 }
 
-footer img {
+
+/* --- Responsive Styles for Mobile --- */
+@media screen and (max-width: 600px) {
+    /* [ปรับปรุง] ลด padding รอบนอกเพื่อให้มีพื้นที่แสดงผลมากขึ้น */
+    body {
+        padding: 1em;
+        padding-bottom: 20vh; /* คงระยะห่างจาก footer ไว้ */
+    }
+
+    /* [ปรับปรุง] ลดขนาดโลโก้ */
+    .main-container img {
+        max-height: 90px;
+    }
+
+    /* [ปรับปรุง] ลดขนาดฟอนต์หัวข้อและปรับระยะห่าง */
+    h1 {
+        font-size: 1.6em; /* ลดขนาดฟอนต์ให้พอดีกับมือถือ */
+        margin-bottom: 0.8em;
+    }
+
+    /* [คงเดิม] ทำให้ input และ button กว้างขึ้น */
+    input, button {
+        width: 90%;
+    }
+    
+    /* [ปรับปรุง] ลด padding ภายในการ์ดผลลัพธ์ */
+    .result {
+        padding: 15px;
+    }
+    
+    /* [ปรับปรุง] ลดขนาดฟอนต์ของข้อความผลลัพธ์เล็กน้อย */
+    .result p {
+        font-size: 15px;
+    }
+    .logo-container {
+    display: flex;
+    justify-content: center; /* จัดโลโก้ให้อยู่กลางแนวนอน */
+    align-items: center;    /* จัดโลโก้ให้อยู่กึ่งกลางแนวตั้ง */
+    gap: 15px;              /* เพิ่มช่องว่างระหว่างโลโก้ */
+    margin-bottom: 1.5em;   /* เพิ่มระยะห่างจากหัวข้อข้างล่าง */
+}
+
+.logo-container .logo {
+    height: 45px; /* กำหนดความสูงของโลโก้ */
+    width: auto;  /* รักษาสัดส่วนของภาพ */
+}
+
+/* แก้ไขสไตล์ของโลโก้ในหน้าจอมือถือ */
+@media screen and (max-width: 600px) {
+    .logo-container .logo {
+        height: 35px; /* ลดขนาดโลโก้ลงอีกสำหรับจอมือถือ */
+    }
+}
+/* --- Footer Styles --- */
+
+/* ทำให้ div ที่ครอบเป็น "ขอบเขต" สำหรับการจัดวางรูปภาพข้างใน */
+.footer-container {
+    position: relative; /* สำคัญมาก: กำหนดให้เป็นจุดอ้างอิงของ element ลูก */
+    position: fixed;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    height: auto;
-    display: block;
+    height: 20vh;
+    z-index: -1;
+    overflow: hidden; /* ป้องกันไม่ให้รูปภาพล้นขอบ */
+}
+
+/* สไตล์สำหรับรูปพื้นหลัง (รูปที่ 1) */
+.footer-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* ทำให้รูปเต็มพื้นที่โดยไม่เสียสัดส่วน */
+    z-index: 1; /* อยู่เลเยอร์ล่างสุด (ใน footer) */
+}
+
+/* สไตล์สำหรับรูปที่วางทับด้านขวา (รูปที่ 2) */
+.footer-overlay-right {
+    position: absolute;
+    bottom: 0; /* ชิดขอบล่าง */
+    right: 10px; /* ชิดขอบขวา (เว้นระยะเล็กน้อย) */
+    height: 90%; /* ทำให้ความสูงเกือบเต็ม footer */
+    width: auto; /* รักษาสัดส่วนของรูป */
+    z-index: 2; /* อยู่เลเยอร์สูงกว่า ทำให้ทับรูปพื้นหลัง */
+}
+/* --- Footer Styling --- */
+footer {
+    position: fixed; /* 1. ตรึงตำแหน่ง footer ไว้กับหน้าจอ */
+    bottom: 0;       /* 2. จัดให้อยู่ชิดขอบล่างสุด */
+    left: 0;         /* 3. จัดให้อยู่ชิดขอบซ้าย */
+    width: 100%;     /* 4. ทำให้ความกว้างเต็ม 100% ของหน้าจอ */
+    z-index: -1;     /* 5. ส่งไปอยู่ด้านหลังเนื้อหาอื่น */
 }
 
 /* --- Responsive Styles for Mobile --- */
@@ -143,8 +236,5 @@ footer img {
     input, button {
         width: 90%;
     }
-
-    .result {
-        padding: 15px;
-    }
+}
 }
