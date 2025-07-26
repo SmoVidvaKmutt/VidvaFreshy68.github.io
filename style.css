@@ -1,17 +1,23 @@
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Orbitron:wght@600&display=swap');
 
+/* style.css */
+
 body {
+    /* --- ค่าพื้นฐาน (สี, ฟอนต์) ยังคงเดิม --- */
     margin: 0;
     font-family: 'Prompt', sans-serif;
     background: linear-gradient(135deg, #800000, #b22222);
     background-size: 400% 400%;
-    /*animation: gradientBG 15s ease infinite;*/
     color: white;
-    text-align: center;
-    padding: 2em;
-    padding-bottom: 20vh; /* Make space for the footer */
-    box-sizing: border-box; /* Ensures padding doesn't add to total width */
+
+    /* --- โค้ดสำหรับจัดกลางหน้าจอ --- */
+    display: flex;
+    align-items: center;    /* จัดให้อยู่กึ่งกลาง "แนวตั้ง" */
+    justify-content: center; /* จัดให้อยู่กึ่งกลาง "แนวนอน" */
+    min-height: 100vh;      /* กำหนดให้ body สูงเต็มหน้าจอเป็นอย่างน้อย */
+    padding: 1em;           /* เพิ่มระยะห่างจากขอบจอเล็กน้อย */
+    box-sizing: border-box;
 }
 
 @keyframes gradientBG {
