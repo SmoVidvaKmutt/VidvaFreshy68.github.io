@@ -133,4 +133,23 @@ footer div {
     .result p {
         font-size: 15px;
     }
+    .logo-container {
+    display: flex;
+    justify-content: center; /* จัดโลโก้ให้อยู่กลางแนวนอน */
+    align-items: center;    /* จัดโลโก้ให้อยู่กึ่งกลางแนวตั้ง */
+    gap: 15px;              /* เพิ่มช่องว่างระหว่างโลโก้ */
+    margin-bottom: 1.5em;   /* เพิ่มระยะห่างจากหัวข้อข้างล่าง */
+}
+
+.logo-container .logo {
+    height: 45px; /* กำหนดความสูงของโลโก้ */
+    width: auto;  /* รักษาสัดส่วนของภาพ */
+}
+
+/* แก้ไขสไตล์ของโลโก้ในหน้าจอมือถือ */
+@media screen and (max-width: 600px) {
+    .logo-container .logo {
+        height: 35px; /* ลดขนาดโลโก้ลงอีกสำหรับจอมือถือ */
+    }
+}
 }
