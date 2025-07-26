@@ -66,9 +66,8 @@ function showResults(data) {
     data.forEach(item => {
         const resultHtml = `
             <div class="result">
-                <p style="font-size: 22px; font-weight: bold; color: #FFD700; margin-bottom: 10px;">
-                    กลุ่ม ${item.group} - วันที่เข้าร่วม: ${item.join_date}
-                </p>
+                <p style="font-size: 22px; font-weight: bold; color: #FFD700; margin-bottom: 10px;">กลุ่ม ${item.group}</p>
+                <p style="font-size: 22px; font-weight: bold; color: #FFD700; margin-bottom: 10px;">วันที่เข้าร่วม: ${item.join_date}</p>
                 <p><strong>รหัสนักศึกษา:</strong> ${item.student_id}</p>
                 <p><strong>ชื่อ:</strong> ${item.first_name} ${item.last_name}</p>
                 <p><strong>ภาควิชา:</strong> ${item.department}</p>
