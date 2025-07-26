@@ -29,7 +29,7 @@ document.getElementById('query').addEventListener('keypress', function(event) {
     }
 });
 
-// --- 2. Search Function (Improved phone number logic) ---
+// --- 2. Search Function (Determines and passes search method) ---
 function performSearch() {
     const rawQuery = document.getElementById('query').value.trim();
     if (!rawQuery) {
@@ -42,66 +42,86 @@ function performSearch() {
     const lowerCaseQuery = cleanQuery.toLowerCase();
 
     const results = studentData.filter(student => {
-        // --- Prepare data from the student record ---
         const studentId = String(student.student_id).replace(/\s/g, '');
         const fullName = (`${student.first_name}${student.last_name}`).toLowerCase().replace(/\s/g, '');
         
-        // --- Normalize phone numbers for robust comparison ---
         let phoneMatch = false;
-        // Check if the student has a phone number to avoid errors
         if (student.phone) {
-            // 1. Get the phone number from the data source and clean it
             const dataPhoneNumber = String(student.phone).replace(/\s/g, '');
-            
-            // 2. Normalize both the query and the data phone number to a "core" version (without a leading '0').
-            // This handles cases where one has a leading 0 and the other doesn't.
             const coreQueryPhone = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
             const coreDataPhone = dataPhoneNumber.startsWith('0') ? dataPhoneNumber.substring(1) : dataPhoneNumber;
-            
-            // 3. Check if the core phone numbers match.
-            // This works whether the query is "08..." and data is "8..." or vice-versa.
             if (coreDataPhone === coreQueryPhone) {
                 phoneMatch = true;
             }
         }
         
-        // --- Perform the search ---
-        // Return true if student ID, full name, OR phone number matches
-        return studentId === cleanQuery || 
-               fullName === lowerCaseQuery ||
-               phoneMatch;
+        return studentId === cleanQuery || fullName === lowerCaseQuery || phoneMatch;
     });
 
-    showResults(results);
+    // [แก้ไข] ตรวจสอบว่าผลลัพธ์ที่ได้มาจากการค้นหาด้วยวิธีใด
+    let searchMethodMessage = '';
+    if (results.length > 0) {
+        const firstResult = results[0];
+        const studentId = String(firstResult.student_id).replace(/\s/g, '');
+        const fullName = (`${firstResult.first_name}${firstResult.last_name}`).toLowerCase().replace(/\s/g, '');
+        
+        // ตรวจสอบเบอร์โทรศัพท์ก่อน
+        let phoneMatch = false;
+        if (firstResult.phone) {
+            const dataPhoneNumber = String(firstResult.phone).replace(/\s/g, '');
+            const coreQueryPhone = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
+            const coreDataPhone = dataPhoneNumber.startsWith('0') ? dataPhoneNumber.substring(1) : dataPhoneNumber;
+            if (coreDataPhone === coreQueryPhone) {
+                phoneMatch = true;
+            }
+        }
+        
+        if (phoneMatch) {
+            searchMethodMessage = `ผลการค้นหาจากเบอร์โทรศัพท์`;
+        } else if (studentId === cleanQuery) {
+            searchMethodMessage = `ผลการค้นหาจากรหัสนักศึกษา`;
+        } else if (fullName === lowerCaseQuery) {
+            searchMethodMessage = `ผลการค้นหาจากชื่อ-นามสกุล`;
+        }
+    }
+    
+    // [แก้ไข] ส่งข้อความประเภทการค้นหาไปยัง showResults
+    showResults(results, searchMethodMessage);
 }
 
-// --- 3. Display Results Function (no changes needed here) ---
-function showResults(data) {
+// --- 3. Display Results Function (Displays the search method) ---
+function showResults(data, searchMethodMessage) { // [แก้ไข] รับพารามิเตอร์เพิ่ม
     const container = document.getElementById('results-container');
-    container.innerHTML = ''; 
-
+    
     if (data.length === 0) {
         container.innerHTML = '<div class="result"><p>ไม่พบข้อมูล</p></div>';
         return;
     }
 
-    data.forEach(item => {
-        const resultHtml = `
-            <div class="result">
-                <p style="font-size: 22px; font-weight: bold; color: #FFD700; margin-bottom: 10px;">
-                    กลุ่ม ${item.group} <br> วันที่เข้าร่วม: ${item.join_date}
-                </p>
-                <p><strong>รหัสนักศึกษา:</strong> ${item.student_id}</p>
-                <p><strong>ชื่อ:</strong> ${item.first_name} ${item.last_name}</p>
-                <p><strong>ภาควิชา:</strong> ${item.department}</p>
-                <p><strong>ไซซ์เสื้อ:</strong> ${item.shirt_size}</p>
-                <p><strong>จุดลงทะเบียนช่วงเช้า:</strong> ${item.checkin_morning}</p>
-                <p><strong>จุดลงทะเบียนช่วงบ่าย:</strong> ${item.checkin_afternoon}</p>
-                <br>
-                <p><strong>*หมายเหตุ:</strong> ${item.note_th || '-'}</p>
-                <p><strong></strong> ${item.note_en || ''}</p>
-            </div>
-        `;
-        container.innerHTML += resultHtml;
-    });
+    // [แก้ไข] สร้างส่วนหัวเพื่อแสดงประเภทการค้นหา
+    let headerHtml = '';
+    if (searchMethodMessage) {
+        headerHtml = `<h3 style="margin-bottom: 1em; font-weight:normal;">${searchMethodMessage}</h3>`;
+    }
+
+    // สร้าง HTML สำหรับผลลัพธ์แต่ละรายการ
+    const resultsHtml = data.map(item => `
+        <div class="result">
+            <p style="font-size: 22px; font-weight: bold; color: #FFD700; margin-bottom: 10px;">
+                กลุ่ม ${item.group} <br> วันที่เข้าร่วม: ${item.join_date}
+            </p>
+            <p><strong>รหัสนักศึกษา:</strong> ${item.student_id}</p>
+            <p><strong>ชื่อ:</strong> ${item.first_name} ${item.last_name}</p>
+            <p><strong>ภาควิชา:</strong> ${item.department}</p>
+            <p><strong>ไซซ์เสื้อ:</strong> ${item.shirt_size}</p>
+            <p><strong>จุดลงทะเบียนช่วงเช้า:</strong> ${item.checkin_morning}</p>
+            <p><strong>จุดลงทะเบียนช่วงบ่าย:</strong> ${item.checkin_afternoon}</p>
+            <br>
+            <p><strong>*หมายเหตุ:</strong> ${item.note_th || '-'}</p>
+            <p><strong></strong> ${item.note_en || ''}</p>
+        </div>
+    `).join('');
+
+    // รวมส่วนหัวและผลลัพธ์เข้าด้วยกันแล้วแสดงผล
+    container.innerHTML = headerHtml + resultsHtml;
 }
