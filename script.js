@@ -29,7 +29,7 @@ document.getElementById('query').addEventListener('keypress', function(event) {
     }
 });
 
-// --- 2. Search Function (Fixed phone number logic) ---
+// --- 2. Search Function (Improved phone number logic) ---
 function performSearch() {
     const rawQuery = document.getElementById('query').value.trim();
     if (!rawQuery) {
@@ -47,19 +47,29 @@ function performSearch() {
         const fullName = (`${student.first_name}${student.last_name}`).toLowerCase().replace(/\s/g, '');
         
         // --- Normalize phone numbers for robust comparison ---
-        
-        // 1. Get the phone number from the data source
-        const dataPhoneNumber = String(student.phone).replace(/\s/g, '');
-        
-        // 2. Normalize both the query and the data phone number to a "core" version (without a leading '0')
-        const coreQueryPhone = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
-        const coreDataPhone = dataPhoneNumber.startsWith('0') ? dataPhoneNumber.substring(1) : dataPhoneNumber;
+        let phoneMatch = false;
+        // Check if the student has a phone number to avoid errors
+        if (student.phone) {
+            // 1. Get the phone number from the data source and clean it
+            const dataPhoneNumber = String(student.phone).replace(/\s/g, '');
+            
+            // 2. Normalize both the query and the data phone number to a "core" version (without a leading '0').
+            // This handles cases where one has a leading 0 and the other doesn't.
+            const coreQueryPhone = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
+            const coreDataPhone = dataPhoneNumber.startsWith('0') ? dataPhoneNumber.substring(1) : dataPhoneNumber;
+            
+            // 3. Check if the core phone numbers match.
+            // This works whether the query is "08..." and data is "8..." or vice-versa.
+            if (coreDataPhone === coreQueryPhone) {
+                phoneMatch = true;
+            }
+        }
         
         // --- Perform the search ---
-        // Compare student ID, full name, and the normalized "core" phone numbers
+        // Return true if student ID, full name, OR phone number matches
         return studentId === cleanQuery || 
                fullName === lowerCaseQuery ||
-               coreDataPhone === coreQueryPhone;
+               phoneMatch;
     });
 
     showResults(results);
