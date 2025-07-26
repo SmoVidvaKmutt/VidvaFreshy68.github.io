@@ -10,7 +10,6 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        // The original JSON is an object with hashed keys, we convert it to an array of student objects
         const jsonData = await response.json();
         studentData = Object.values(jsonData);
         
@@ -25,37 +24,39 @@ window.addEventListener('DOMContentLoaded', async () => {
 // Add event listener for 'Enter' key on the input field
 document.getElementById('query').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-        event.preventDefault(); // Prevent form submission
+        event.preventDefault();
         performSearch();
     }
 });
 
-
 // --- 2. Search Function (replaces google.script.run) ---
 function performSearch() {
-    const query = document.getElementById('query').value.trim().toLowerCase();
+    // **[แก้ไข]** แปลงคำค้นหาให้เป็นตัวพิมพ์เล็กและลบช่องว่างทั้งหมด
+    const query = document.getElementById('query').value.toLowerCase().replace(/\s/g, '');
     
     if (!query) {
         alert("กรุณากรอกข้อมูลก่อนค้นหา (Please enter Student ID or Name)");
         return;
     }
 
-    // Play sound if you have one
-    // document.getElementById('kmuttSong').play();
-
     const results = studentData.filter(student => {
-        const studentId = String(student.student_id).trim();
-        const fullName = `${student.first_name} ${student.last_name}`.toLowerCase();
-        return studentId.includes(query) || fullName.includes(query);
+        // **[แก้ไข]** แปลงรหัสนักศึกษาจากข้อมูลให้เป็นสตริงและลบช่องว่าง
+        const studentId = String(student.student_id).replace(/\s/g, '');
+
+        // **[แก้ไข]** รวมชื่อ-นามสกุล, แปลงเป็นตัวพิมพ์เล็ก, และลบช่องว่าง
+        const fullName = (`${student.first_name}${student.last_name}`).toLowerCase().replace(/\s/g, '');
+
+        // **[แก้ไข]** เปลี่ยนจาก .includes() เป็น === เพื่อเปรียบเทียบแบบตรงกันเท่านั้น
+        return studentId === query || fullName === query;
     });
 
     showResults(results);
 }
 
-// --- 3. Display Results Function (adapted from your original code) ---
+// --- 3. Display Results Function (no changes needed here) ---
 function showResults(data) {
     const container = document.getElementById('results-container');
-    container.innerHTML = ''; // Clear previous results
+    container.innerHTML = ''; 
 
     if (data.length === 0) {
         container.innerHTML = '<div class="result"><p>ไม่พบข้อมูล</p></div>';
