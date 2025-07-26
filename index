@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Orbitron:wght@600&display=swap');
+      body {
+        
+        margin: 0;
+        font-family: 'Prompt', sans-serif;
+        background: linear-gradient(135deg, #800000, #b22222);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        color: white;
+        text-align: center;
+        padding: 2em;
+      }
+      @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      .logo {
+        width: 100px;
+        margin-bottom: 1em;
+      }
+      h1 {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2.2em;
+        margin-bottom: 1em;
+        text-shadow: 2px 2px #00000055;
+      }
+      input {
+        padding: 12px;
+        width: 80%;
+        max-width: 400px;
+        font-size: 16px;
+        border: none;
+        border-radius: 10px;
+        margin-bottom: 1em;
+        outline: none;
+      }
+      button {
+        padding: 12px 30px;
+        background: #ffffff;
+        color: #800000;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 16px;
+      }
+      button:hover {
+        background: #ffd6d6;
+      }
+      .result {
+        margin-top: 2em;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 12px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        animation: fadeIn 1s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      p {
+        margin: 6px 0;
+        font-size: 16px;
+      }
+      @media screen and (max-width: 600px) {
+        input, button {
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+  <script>
+    function doSearch() {
+      const query = document.getElementById("query").value;
+      google.script.run.withSuccessHandler(showResults).searchStudent(query);
+    }
+
+    function showResults(results) {
+      const resultsDiv = document.getElementById("results");
+
+      if (results.length === 0) {
+        resultsDiv.innerHTML = "<p>ไม่พบข้อมูล</p>";
+        return;
+      }
+
+      let html = "<table border='1' cellpadding='5'><tr><th>รหัสนักศึกษา</th><th>ชื่อ</th><th>นามสกุล</th><th>กลุ่ม</th><th>ไซซ์เสื้อ</th><th>วันที่เข้าร่วม</th></tr>";
+      results.forEach(row => {
+        html += `<tr>
+          <td>${row["รหัสนักศึกษา"]}</td>
+          <td>${row["ชื่อ"]}</td>
+          <td>${row["นามสกุล"]}</td>
+          <td>${row["กลุ่ม"]}</td>
+          <td>${row["ไซซ์เสื้อ"]}</td>
+          <td>${row["วันที่เข้าร่วม"]}</td>
+        </tr>`;
+      });
+      html += "</table>";
+
+      resultsDiv.innerHTML = html;
+    }
+</script>
+
+   <!-- <body> -->
+    <!-- โลโก้คณะวิศวกรรมศาสตร์ (ซ้าย) -->
+   <!-- <body>
+  <div style="position: relative;">
+    <img src="https://i.postimg.cc/mhfVf03V/image.png" 
+         alt="โลโก้คณะวิศวกรรมศาสตร์" 
+         style="height: 150px; vertical-align: middle; display: block;">
+
+    </div>
+  </body>  -->
+
+  <body>
+    <!-- โลโก้คณะวิศวกรรมศาสตร์ (กลาง)-->
+    <div style="text-align: center;">
+      <img src="https://i.postimg.cc/mhfVf03V/image.png" 
+         alt="โลโก้คณะวิศวกรรมศาสตร์" 
+         style=" vertical-align: middle; max-height: 120px;">
+    </div>
+  </body> 
+
+    <h1>Welcome To The "Engineering Orientation Acadamic Year 2025"</h1>
+
+    <input type="text" id="query" placeholder="กรอกรหัสนักศึกษา Enter Your Student ID">
+    <br>
+    <button onclick="doSearch()">ค้นหา search</button>
+    <div id="results"></div>
+
+    <audio id="kmuttSong">
+      <source src="https://youtu.be/zfy5DkFGSh4?feature=shared" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio> 
+
+    <script>
+      function search() {
+        const query = document.getElementById('query').value.trim();
+        if (!query) return alert("กรุณากรอกข้อมูลก่อนค้นหา Please Enter Your Student ID ");
+        document.getElementById('kmuttSong').play();
+        google.script.run.withSuccessHandler(showResults).searchStudent(query);
+      }
+
+      function showResults(data) {
+        const container = document.getElementById('results');
+        container.innerHTML = '';
+        if (data.length === 0) {
+          container.innerHTML = '<p>ไม่พบข้อมูล</p>';
+          return;
+        }
+        data.forEach(item => {
+          container.innerHTML += `
+            <div class="result">
+              <p style="font-size: 22px; font-weight: bold; color: #FFD700; margin-bottom: 10px;">
+              กลุ่ม ${item["กลุ่ม"]} - วันที่เข้าร่วม: ${item["วันที่เข้าร่วมกิจกรรมสานสัมพันธ์"]}
+              </p>
+            
+              <p><strong>รหัสนักศึกษา:</strong> ${item["รหัสนักศึกษา"]}</p>
+              <p><strong>ชื่อ:</strong> ${item["ชื่อ"]} ${item["นามสกุล"]}</p>
+              <p><strong>ภาควิชา:</strong> ${item["ภาควิชา"]}</p>
+              <p><strong>ไซซ์เสื้อ:</strong> ${item["ไซซ์เสื้อ"]}</p>
+              <p><strong>จุดลงทะเบียนช่วงเช้า:</strong> ${item["จุดลงทะเบียนช่วงเช้า"]}</p>
+              <p><strong>จุดลงทะเบียนช่วงบ่าย:</strong> ${item["จุดลงทะเบียนช่วงบ่าย"]}</p>
+              <br>
+              <p><strong>*หมายเหตุ:</strong> ${item["*หมายเหตุ"] || '-'}</p>
+              <p><strong></strong> ${item["*Remark"] || ''}</p>
+            </div>
+          `;
+        });
+      }
+    </script>
+    <footer>
+      <div style="position:fixed; bottom:0; left:0; width:100%; height:80%;">
+        <img src="https://i.postimg.cc/VLHqvt08/4.png"
+       style="width:100%; height:100%; object-fit:cover;"
+       alt="Sea">
+</div>
+    </footer>
+  </body>
+</html>
