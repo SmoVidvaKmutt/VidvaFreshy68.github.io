@@ -6,15 +6,12 @@ body {
     font-family: 'Prompt', sans-serif;
     background: linear-gradient(135deg, #800000, #b22222);
     background-size: 400% 400%;
+    /*animation: gradientBG 15s ease infinite;*/
     color: white;
-
-    /* คำสั่งสำหรับจัดกลางเฉพาะแนวนอน */
     text-align: center;
-
-    /* คืนค่า padding เดิม เพื่อให้เนื้อหาไม่ชิดขอบบน */
     padding: 2em;
-    padding-bottom: 20vh; /* เว้นที่สำหรับ footer */
-    box-sizing: border-box;
+    padding-bottom: 20vh; /* Make space for the footer */
+    box-sizing: border-box; /* Ensures padding doesn't add to total width */
 }
 
 @keyframes gradientBG {
@@ -97,7 +94,7 @@ footer div {
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 90%;
+    width: 100%;
     height: 60%;
     z-index: -1;
 }
