@@ -9,29 +9,36 @@ body {
     color: white;
     text-align: center;
     padding: 2em;
-    padding-bottom: 20vh; /* Make space for the footer */
-    box-sizing: border-box; /* Ensures padding doesn't add to total width */
+    padding-bottom: 30vh; /* เพิ่ม padding ด้านล่างเพื่อไม่ให้เนื้อหาถูก footer บัง */
+    box-sizing: border-box;
 }
 
-@keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.main-container {
+    max-width: 900px;
+    margin: 0 auto;
 }
 
-/* Added style for the main content wrapper */
-.main-container img {
+.logo-container img {
     max-height: 120px;
     vertical-align: middle;
+    margin-bottom: 1.5em;
+}
+
+h1, h2 {
+    font-family: 'Orbitron', sans-serif;
+    text-shadow: 2px 2px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
 }
 
 h1 {
-    font-family: 'Orbitron', sans-serif;
     font-size: 2.2em;
-    line-height: 1.3;
-    margin-top: 0.5em;
+    margin: 0;
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-top: 0.2em;
     margin-bottom: 1em;
-    text-shadow: 2px 2px #00000055;
 }
 
 input {
@@ -43,6 +50,7 @@ input {
     border-radius: 10px;
     margin-bottom: 1em;
     outline: none;
+    text-align: center; /* จัดให้ placeholder อยู่กลาง */
 }
 
 button {
@@ -74,116 +82,45 @@ button:hover {
     margin-left: auto;
     margin-right: auto;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    animation: fadeIn 1s ease-in-out;
     text-align: left;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* --- Footer Styling --- */
+footer {
+    position: fixed; /* 1. ตรึงตำแหน่ง footer ไว้กับหน้าจอ */
+    bottom: 0;       /* 2. จัดให้อยู่ชิดขอบล่างสุด */
+    left: 0;         /* 3. จัดให้อยู่ชิดขอบซ้าย */
+    width: 100%;     /* 4. ทำให้ความกว้างเต็ม 100% ของหน้าจอ */
+    z-index: -1;     /* 5. ส่งไปอยู่ด้านหลังเนื้อหาอื่น */
 }
 
-p {
-    margin: 8px 0;
-    font-size: 16px;
-}
-
-/* [แก้ไข] แก้ไข Footer ให้มีความสูงที่เหมาะสม */
-footer div {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 20vh; /* ปรับความสูงเป็น 20% ของความสูงหน้าจอ (vh) */
-    z-index: -1;
+footer img {
+    width: 100%;     /* ทำให้รูปภาพกว้างเต็มพื้นที่ footer */
+    height: auto;    /* ปรับความสูงอัตโนมัติเพื่อรักษาสัดส่วน */
+    display: block;  /* แก้ไขปัญหาระยะห่างแปลกๆ ใต้ภาพ */
 }
 
 
 /* --- Responsive Styles for Mobile --- */
 @media screen and (max-width: 600px) {
-    /* [ปรับปรุง] ลด padding รอบนอกเพื่อให้มีพื้นที่แสดงผลมากขึ้น */
     body {
         padding: 1em;
-        padding-bottom: 20vh; /* คงระยะห่างจาก footer ไว้ */
+        padding-bottom: 25vh;
     }
 
-    /* [ปรับปรุง] ลดขนาดโลโก้ */
-    .main-container img {
+    .logo-container img {
         max-height: 90px;
     }
 
-    /* [ปรับปรุง] ลดขนาดฟอนต์หัวข้อและปรับระยะห่าง */
     h1 {
-        font-size: 1.6em; /* ลดขนาดฟอนต์ให้พอดีกับมือถือ */
-        margin-bottom: 0.8em;
+        font-size: 1.8em;
+    }
+    
+    h2 {
+        font-size: 1.4em;
     }
 
-    /* [คงเดิม] ทำให้ input และ button กว้างขึ้น */
     input, button {
         width: 90%;
     }
-    
-    /* [ปรับปรุง] ลด padding ภายในการ์ดผลลัพธ์ */
-    .result {
-        padding: 15px;
-    }
-    
-    /* [ปรับปรุง] ลดขนาดฟอนต์ของข้อความผลลัพธ์เล็กน้อย */
-    .result p {
-        font-size: 15px;
-    }
-    .logo-container {
-    display: flex;
-    justify-content: center; /* จัดโลโก้ให้อยู่กลางแนวนอน */
-    align-items: center;    /* จัดโลโก้ให้อยู่กึ่งกลางแนวตั้ง */
-    gap: 15px;              /* เพิ่มช่องว่างระหว่างโลโก้ */
-    margin-bottom: 1.5em;   /* เพิ่มระยะห่างจากหัวข้อข้างล่าง */
-}
-
-.logo-container .logo {
-    height: 45px; /* กำหนดความสูงของโลโก้ */
-    width: auto;  /* รักษาสัดส่วนของภาพ */
-}
-
-/* แก้ไขสไตล์ของโลโก้ในหน้าจอมือถือ */
-@media screen and (max-width: 600px) {
-    .logo-container .logo {
-        height: 35px; /* ลดขนาดโลโก้ลงอีกสำหรับจอมือถือ */
-    }
-}
-/* --- Footer Styles --- */
-
-/* ทำให้ div ที่ครอบเป็น "ขอบเขต" สำหรับการจัดวางรูปภาพข้างใน */
-.footer-container {
-    position: relative; /* สำคัญมาก: กำหนดให้เป็นจุดอ้างอิงของ element ลูก */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 20vh;
-    z-index: -1;
-    overflow: hidden; /* ป้องกันไม่ให้รูปภาพล้นขอบ */
-}
-
-/* สไตล์สำหรับรูปพื้นหลัง (รูปที่ 1) */
-.footer-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* ทำให้รูปเต็มพื้นที่โดยไม่เสียสัดส่วน */
-    z-index: 1; /* อยู่เลเยอร์ล่างสุด (ใน footer) */
-}
-
-/* สไตล์สำหรับรูปที่วางทับด้านขวา (รูปที่ 2) */
-.footer-overlay-right {
-    position: absolute;
-    bottom: 0; /* ชิดขอบล่าง */
-    right: 10px; /* ชิดขอบขวา (เว้นระยะเล็กน้อย) */
-    height: 90%; /* ทำให้ความสูงเกือบเต็ม footer */
-    width: auto; /* รักษาสัดส่วนของรูป */
-    z-index: 2; /* อยู่เลเยอร์สูงกว่า ทำให้ทับรูปพื้นหลัง */
-}
-
 }
