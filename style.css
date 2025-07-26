@@ -1,0 +1,104 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Orbitron:wght@600&display=swap');
+
+body {
+    margin: 0;
+    font-family: 'Prompt', sans-serif;
+    background: linear-gradient(135deg, #800000, #b22222);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: white;
+    text-align: center;
+    padding: 2em;
+    padding-bottom: 20vh; /* Make space for the footer */
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.logo {
+    width: 100px;
+    margin-bottom: 1em;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2em;
+    margin-bottom: 1em;
+    text-shadow: 2px 2px #00000055;
+}
+
+input {
+    padding: 12px;
+    width: 80%;
+    max-width: 400px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 1em;
+    outline: none;
+}
+
+button {
+    padding: 12px 30px;
+    background: #ffffff;
+    color: #800000;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #ffd6d6;
+}
+
+#results-container {
+    margin-top: 2em;
+}
+
+.result {
+    margin-top: 1em;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    animation: fadeIn 1s ease-in-out;
+    text-align: left; /* Align text inside result card to the left */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+footer div {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20vh;
+    z-index: -1;
+}
+
+@media screen and (max-width: 600px) {
+    input, button {
+        width: 90%;
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+}
