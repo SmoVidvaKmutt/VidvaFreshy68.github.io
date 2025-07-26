@@ -5,7 +5,6 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Orbitron:wght@600&display=swap');
       body {
-        
         margin: 0;
         font-family: 'Prompt', sans-serif;
         background: linear-gradient(135deg, #800000, #b22222);
@@ -14,6 +13,7 @@
         color: white;
         text-align: center;
         padding: 2em;
+        padding-bottom: 20vh;
       }
       @keyframes gradientBG {
         0% { background-position: 0% 50%; }
@@ -77,7 +77,14 @@
         input, button {
           width: 90%;
         }
-      }
+        footer div {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 20vh;
+          z-index: -1; /* ทำให้ footer อยู่ข้างหลัง content */
+        }
     </style>
   </head>
   <script>
