@@ -23,16 +23,32 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.logo {
-    width: 100px;
-    margin-bottom: 1em;
+/* [แก้ไข] ใช้ Flexbox เพื่อจัดกลางเนื้อหาทั้งหมด */
+.main-container {
+    display: flex;
+    flex-direction: column; /* จัดเรียงจากบนลงล่าง */
+    align-items: center;   /* จัดทุกอย่างให้อยู่กึ่งกลางแนวนอน */
+    
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center; /* จัดกลางข้อความที่อยู่ข้างใน */
 }
 
-h1 {
+.logo-container img {
+    max-height: 120px;
+    margin-bottom: 1.5em;
+}
+
+h1,h2 {
     font-family: 'Orbitron', sans-serif;
     font-size: 2.2em;
     margin-bottom: 1em;
     text-shadow: 2px 2px #00000055;
+}
+
+h2 {
+    margin-top: 0.1em;
+    margin-bottom: 1em;
 }
 
 input {
