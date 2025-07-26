@@ -79,7 +79,7 @@ function performSearch() {
         if (phoneMatch) {
             searchMethodMessage ;
         } else if (studentId === cleanQuery) {
-            searchMethodMessage = `ผลการค้นหาจากรหัสนักศึกษา`;
+            searchMethodMessage ;
         } else if (fullName === lowerCaseQuery) {
             searchMethodMessage = `ผลการค้นหาจากชื่อ-นามสกุล`;
         }
