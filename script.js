@@ -29,7 +29,7 @@ document.getElementById('query').addEventListener('keypress', function(event) {
     }
 });
 
-// --- 2. Search Function (Handles leading '0' on phone numbers) ---
+// --- 2. Search Function (Fixed phone number logic) ---
 function performSearch() {
     const rawQuery = document.getElementById('query').value.trim();
     if (!rawQuery) {
@@ -37,27 +37,29 @@ function performSearch() {
         return;
     }
 
-    // Prepare different query formats for searching
-    const queryForIdsAndPhone = rawQuery.replace(/\s/g, '');
-    const queryForNames = queryForIdsAndPhone.toLowerCase();
-    
-    // [เพิ่ม] สร้างตัวแปรสำหรับค้นหาเบอร์โทรที่ไม่มีเลข 0 นำหน้า
-    let queryForPhoneWithoutZero = queryForIdsAndPhone;
-    if (queryForIdsAndPhone.startsWith('0')) {
-        queryForPhoneWithoutZero = queryForIdsAndPhone.substring(1);
-    }
+    // Prepare query formats for different data types
+    const cleanQuery = rawQuery.replace(/\s/g, '');
+    const lowerCaseQuery = cleanQuery.toLowerCase();
 
     const results = studentData.filter(student => {
-        // Prepare all searchable fields from the student data
+        // --- Prepare data from the student record ---
         const studentId = String(student.student_id).replace(/\s/g, '');
         const fullName = (`${student.first_name}${student.last_name}`).toLowerCase().replace(/\s/g, '');
-        const phoneNumber = String(student.phone).replace(/\s/g, '');
-
-        // [แก้ไข] เพิ่มเงื่อนไขการค้นหาเบอร์โทรศัพท์ที่ตัดเลข 0 ออกแล้ว
-        return studentId === queryForIdsAndPhone || 
-               fullName === queryForNames || 
-               phoneNumber === queryForIdsAndPhone || 
-               phoneNumber === queryForPhoneWithoutZero;
+        
+        // --- Normalize phone numbers for robust comparison ---
+        
+        // 1. Get the phone number from the data source
+        const dataPhoneNumber = String(student.phone).replace(/\s/g, '');
+        
+        // 2. Normalize both the query and the data phone number to a "core" version (without a leading '0')
+        const coreQueryPhone = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
+        const coreDataPhone = dataPhoneNumber.startsWith('0') ? dataPhoneNumber.substring(1) : dataPhoneNumber;
+        
+        // --- Perform the search ---
+        // Compare student ID, full name, and the normalized "core" phone numbers
+        return studentId === cleanQuery || 
+               fullName === lowerCaseQuery ||
+               coreDataPhone === coreQueryPhone;
     });
 
     showResults(results);
