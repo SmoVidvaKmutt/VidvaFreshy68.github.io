@@ -1,5 +1,5 @@
 // URL to your raw JSON data file on GitHub or another hosting service
-const DATA_URL = 'https://raw.githubusercontent.com/SmoVidvaKmutt/VidvaFreshy68.github.io/refs/heads/main/students_by_hash_20250727_005444.json'; // <--- **สำคัญ: แก้ไข URL นี้**
+const DATA_URL = 'https://raw.githubusercontent.com/SmoVidvaKmutt/VidvaFreshy68.github.io/main/students_by_hash_20250727_005444.json'; // <--- **สำคัญ: แก้ไข URL นี้**
 
 let studentData = []; // To store all student data after fetching
 
