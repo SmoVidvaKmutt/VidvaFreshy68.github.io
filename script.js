@@ -81,7 +81,7 @@ function performSearch() {
         } else if (studentId === cleanQuery) {
             searchMethodMessage ;
         } else if (fullName === lowerCaseQuery) {
-            searchMethodMessage = `ผลการค้นหาจากชื่อ-นามสกุล`;
+            searchMethodMessage ;
         }
     }
     
