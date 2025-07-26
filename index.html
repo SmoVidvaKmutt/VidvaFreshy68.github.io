@@ -5,32 +5,169 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Engineering Orientation 2025 Search</title>
     <base target="_top">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <!-- 1. Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Custom Fonts and Animations (ส่วนที่ Tailwind CDN ทำไม่ได้โดยตรง) -->
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;700&family=Orbitron:wght@600&display=swap');
+
+        body {
+            font-family: 'Prompt', sans-serif;
+        }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 2px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Define animations to be used with Tailwind's 'animate-*' classes */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Create custom animation classes */
+        .animate-gradientBG {
+            animation: gradientBG 15s ease infinite;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 1s ease-in-out;
+        }
+    </style>
 </head>
-<body>
-    <div class="main-container">
-        <div class="logo-container">
+<body class="bg-gradient-to-br from-red-900 to-red-700 text-white text-center p-4 sm:p-8 pb-[20vh] box-border animate-gradientBG" style="background-size: 400% 400%;">
+    
+    <div class="main-container max-w-4xl mx-auto">
+        
+        <!-- Logo Container -->
+        <div class="logo-container flex justify-center items-center gap-4 mb-6">
             <img src="https://i.postimg.cc/mhfVf03V/image.png"
-             alt="โลโก้คณะวิศวกรรมศาสตร์"
-             style="vertical-align: middle; max-height: 120px;">
+                 alt="โลโก้คณะวิศวกรรมศาสตร์"
+                 class="h-16 sm:h-24 md:h-28">
         </div>
         
-        <h1>Welcome To The Pirates’ Odyssey : The Ten-Islands</h1>
-        <input type="text" id="query" placeholder="กรอกรหัสนักศึกษา (Input Your Student ID)"><br>
-        <button onclick="performSearch()">ค้นหา (Search)</button>
-        <div id="results-container"></div>
+        <!-- Header -->
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-6">
+            Welcome To The Pirates’ Odyssey : The Ten-Islands
+        </h1>
+        
+        <!-- Search Input -->
+        <input type="text" id="query" placeholder="กรอกรหัสนักศึกษา (Input Your Student ID)"
+               class="w-full max-w-md p-3 mb-4 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+        <br>
+        
+        <!-- Search Button -->
+        <button onclick="performSearch()"
+                class="py-3 px-8 mb-8 bg-white text-red-800 font-bold rounded-lg transition duration-300 hover:bg-red-100">
+            ค้นหา (Search)
+        </button>
+        
+        <!-- Results Container -->
+        <div id="results-container" class="mt-8">
+            <!-- Search results will be injected here by JavaScript -->
+        </div>
     </div>
-    <footer>
-        <div>
+
+    <!-- Footer -->
+    <footer class="fixed bottom-0 left-0 w-full h-[20vh] -z-10">
+        <div class="relative w-full h-full overflow-hidden">
+            <!-- Background Image -->
             <img src="https://i.postimg.cc/VLHqvt08/4.png"
-                 style="width:100%; height:100%; object-fit:cover;"
-                 alt="Footer Image">
+                 class="absolute inset-0 w-full h-full object-cover z-0"
+                 alt="Footer Background">
+            <!-- Overlay Image -->
+            <img src="https://i.postimg.cc/yNNSbWd7/YOUR-SECOND-IMAGE.png" <!-- <-- แก้ไข URL รูปที่นี่ -->
+                 class="absolute bottom-0 right-2.5 h-5/6 w-auto z-10"
+                 alt="Overlay Image">
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- 3. JavaScript Logic (เหมือนเดิม) -->
+    <script>
+        // URL to your raw JSON data file on GitHub or another hosting service
+        const DATA_URL = 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/data.json'; // <--- **สำคัญ: แก้ไข URL นี้**
+
+        let studentData = []; // To store all student data after fetching
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch(DATA_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const jsonData = await response.json();
+                studentData = Object.values(jsonData);
+                console.log("Data loaded successfully.");
+            } catch (error) {
+                console.error("Failed to load student data:", error);
+                const resultsContainer = document.getElementById('results-container');
+                resultsContainer.innerHTML = '<p class="text-red-300">เกิดข้อผิดพลาดในการโหลดข้อมูลนักศึกษา</p>';
+            }
+        });
+
+        document.getElementById('query').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performSearch();
+            }
+        });
+
+        function performSearch() {
+            const query = document.getElementById('query').value.toLowerCase().replace(/\s/g, '');
+            if (!query) {
+                alert("กรุณากรอกข้อมูลก่อนค้นหา (Please enter Student ID or Name)");
+                return;
+            }
+            const results = studentData.filter(student => {
+                const studentId = String(student.student_id).replace(/\s/g, '');
+                const fullName = (`${student.first_name}${student.last_name}`).toLowerCase().replace(/\s/g, '');
+                return studentId === query || fullName === query;
+            });
+            showResults(results);
+        }
+
+        function showResults(data) {
+            const container = document.getElementById('results-container');
+            container.innerHTML = '';
+
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="result-card animate-fadeIn">
+                        <p>ไม่พบข้อมูล</p>
+                    </div>`;
+                return;
+            }
+
+            data.forEach(item => {
+                // We use a template literal to build the HTML with Tailwind classes
+                const resultHtml = `
+                    <div class="result-card animate-fadeIn mt-4 bg-white/10 p-5 rounded-xl max-w-2xl mx-auto shadow-lg text-left">
+                        <p class="text-lg sm:text-xl font-bold text-yellow-300 mb-2">
+                            กลุ่ม ${item.group} - วันที่เข้าร่วม: ${item.join_date}
+                        </p>
+                        <p><strong>รหัสนักศึกษา:</strong> ${item.student_id}</p>
+                        <p><strong>ชื่อ:</strong> ${item.first_name} ${item.last_name}</p>
+                        <p><strong>ภาควิชา:</strong> ${item.department}</p>
+                        <p><strong>ไซซ์เสื้อ:</strong> ${item.shirt_size}</p>
+                        <p><strong>จุดลงทะเบียนช่วงเช้า:</strong> ${item.checkin_morning}</p>
+                        <p><strong>จุดลงทะเบียนช่วงบ่าย:</strong> ${item.checkin_afternoon}</p>
+                        <br>
+                        <p><strong>*หมายเหตุ:</strong> ${item.note_th || '-'}</p>
+                        <p><strong></strong> ${item.note_en || ''}</p>
+                    </div>
+                `;
+                container.innerHTML += resultHtml;
+            });
+        }
+    </script>
+
 </body>
 </html>
