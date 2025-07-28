@@ -31,7 +31,7 @@ document.getElementById('query').addEventListener('keypress', function(event) {
     }
 });
 
-// --- 2. Search Function (Correctly assigns search method message) ---
+// --- 2. Search Function ---
 function performSearch() {
     const rawQuery = document.getElementById('query').value.trim();
     if (!rawQuery) {
@@ -60,51 +60,17 @@ function performSearch() {
         return studentId === cleanQuery || fullName === lowerCaseQuery || phoneMatch;
     });
 
-    // Determine the search method based on the first result
-    let searchMethodMessage = '';
-    if (results.length > 0) {
-        const firstResult = results[0];
-        const studentId = String(firstResult.student_id).replace(/\s/g, '');
-        const fullName = (`${firstResult.first_name}${firstResult.last_name}`).toLowerCase().replace(/\s/g, '');
-        
-        // Check for phone match first
-        let phoneMatch = false;
-        if (firstResult.phone) {
-            const dataPhoneNumber = String(firstResult.phone).replace(/\s/g, '');
-            const coreQueryPhone = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
-            const coreDataPhone = dataPhoneNumber.startsWith('0') ? dataPhoneNumber.substring(1) : dataPhoneNumber;
-            if (coreDataPhone === coreQueryPhone) {
-                phoneMatch = true;
-            }
-        }
-        
-        // [แก้ไข] กำหนดค่าให้กับ searchMethodMessage
-        if (phoneMatch) {
-            searchMethodMessage = 'ผลการค้นหาจากเบอร์โทรศัพท์';
-        } else if (studentId === cleanQuery) {
-            searchMethodMessage = 'ผลการค้นหาจากรหัสนักศึกษา';
-        } else if (fullName === lowerCaseQuery) {
-            searchMethodMessage = 'ผลการค้นหาจากชื่อ-นามสกุล';
-        }
-    }
-    
-    // Pass the message to the display function
-    showResults(results, searchMethodMessage);
+    // Call the display function
+    showResults(results);
 }
 
-// --- 3. Display Results Function (Displays the search method) ---
-function showResults(data, searchMethodMessage) {
+// --- 3. Display Results Function ---
+function showResults(data) {
     const container = document.getElementById('results-container');
     
     if (data.length === 0) {
         container.innerHTML = '<div class="result"><p>ไม่พบข้อมูล</p></div>';
         return;
-    }
-
-    // Create the header to display the search method
-    let headerHtml = '';
-    if (searchMethodMessage) {
-        headerHtml = `<h3 style="margin-bottom: 1em; font-weight:normal;">${searchMethodMessage}</h3>`;
     }
 
     // Create the HTML for each result item
@@ -125,6 +91,6 @@ function showResults(data, searchMethodMessage) {
         </div>
     `).join('');
 
-    // Combine the header and results and display them
-    container.innerHTML = headerHtml + resultsHtml;
+    // Display the results
+    container.innerHTML = resultsHtml;
 }
