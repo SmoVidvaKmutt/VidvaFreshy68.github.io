@@ -1,5 +1,5 @@
 // URL to your raw JSON data file on GitHub or another hosting service
-const DATA_URL = 'https://raw.githubusercontent.com/SmoVidvaKmutt/VidvaFreshy68.github.io/main/students_by_hash_20250727_191218.json'; // <--- **สำคัญ: แก้ไข URL นี้**
+const DATA_URL = 'https://raw.githubusercontent.com/SmoVidvaKmutt/VidvaFreshy68.github.io/main/students_by_hash_20250728_151224.json'; // <--- **สำคัญ: แก้ไข URL นี้**
 
 let studentData = []; // To store all student data after fetching
 
@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const jsonData = await response.json();
-        studentData = Object.values(jsonData);
+        studentData = Object.values(jsonData).flat();
         
         console.log("Data loaded successfully.");
     } catch (error) {
