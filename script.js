@@ -1,5 +1,5 @@
 // URL to your raw JSON data file on GitHub or another hosting service
-const DATA_URL = 'https://raw.githubusercontent.com/SmoVidvaKmutt/VidvaFreshy68.github.io/main/students_by_hash_20250728_151224.json'; // <--- **สำคัญ: แก้ไข URL นี้**
+const DATA_URL = 'https://raw.githubusercontent.com/SmoVidvaKmutt/VidvaFreshy68.github.io/main/students_by_hash_20250728_151224.json';
 
 let studentData = []; // To store all student data after fetching
 
@@ -11,6 +11,8 @@ window.addEventListener('DOMContentLoaded', async () => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const jsonData = await response.json();
+        
+        // Use .flat() to handle both single and grouped (duplicate) entries
         studentData = Object.values(jsonData).flat();
         
         console.log("Data loaded successfully.");
@@ -29,7 +31,7 @@ document.getElementById('query').addEventListener('keypress', function(event) {
     }
 });
 
-// --- 2. Search Function (Determines and passes search method) ---
+// --- 2. Search Function (Correctly assigns search method message) ---
 function performSearch() {
     const rawQuery = document.getElementById('query').value.trim();
     if (!rawQuery) {
@@ -58,14 +60,14 @@ function performSearch() {
         return studentId === cleanQuery || fullName === lowerCaseQuery || phoneMatch;
     });
 
-    // [แก้ไข] ตรวจสอบว่าผลลัพธ์ที่ได้มาจากการค้นหาด้วยวิธีใด
+    // Determine the search method based on the first result
     let searchMethodMessage = '';
     if (results.length > 0) {
         const firstResult = results[0];
         const studentId = String(firstResult.student_id).replace(/\s/g, '');
         const fullName = (`${firstResult.first_name}${firstResult.last_name}`).toLowerCase().replace(/\s/g, '');
         
-        // ตรวจสอบเบอร์โทรศัพท์ก่อน
+        // Check for phone match first
         let phoneMatch = false;
         if (firstResult.phone) {
             const dataPhoneNumber = String(firstResult.phone).replace(/\s/g, '');
@@ -76,21 +78,22 @@ function performSearch() {
             }
         }
         
+        // [แก้ไข] กำหนดค่าให้กับ searchMethodMessage
         if (phoneMatch) {
-            searchMethodMessage ;
+            searchMethodMessage = 'ผลการค้นหาจากเบอร์โทรศัพท์';
         } else if (studentId === cleanQuery) {
-            searchMethodMessage ;
+            searchMethodMessage = 'ผลการค้นหาจากรหัสนักศึกษา';
         } else if (fullName === lowerCaseQuery) {
-            searchMethodMessage ;
+            searchMethodMessage = 'ผลการค้นหาจากชื่อ-นามสกุล';
         }
     }
     
-    // [แก้ไข] ส่งข้อความประเภทการค้นหาไปยัง showResults
+    // Pass the message to the display function
     showResults(results, searchMethodMessage);
 }
 
 // --- 3. Display Results Function (Displays the search method) ---
-function showResults(data, searchMethodMessage) { // [แก้ไข] รับพารามิเตอร์เพิ่ม
+function showResults(data, searchMethodMessage) {
     const container = document.getElementById('results-container');
     
     if (data.length === 0) {
@@ -98,13 +101,13 @@ function showResults(data, searchMethodMessage) { // [แก้ไข] รับ
         return;
     }
 
-    // [แก้ไข] สร้างส่วนหัวเพื่อแสดงประเภทการค้นหา
+    // Create the header to display the search method
     let headerHtml = '';
     if (searchMethodMessage) {
         headerHtml = `<h3 style="margin-bottom: 1em; font-weight:normal;">${searchMethodMessage}</h3>`;
     }
 
-    // สร้าง HTML สำหรับผลลัพธ์แต่ละรายการ
+    // Create the HTML for each result item
     const resultsHtml = data.map(item => `
         <div class="result">
             <p style="font-size: 22px; font-weight: bold; color: #FFD700; margin-bottom: 10px;">
@@ -122,6 +125,6 @@ function showResults(data, searchMethodMessage) { // [แก้ไข] รับ
         </div>
     `).join('');
 
-    // รวมส่วนหัวและผลลัพธ์เข้าด้วยกันแล้วแสดงผล
+    // Combine the header and results and display them
     container.innerHTML = headerHtml + resultsHtml;
 }
