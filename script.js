@@ -9,7 +9,7 @@ const firebaseConfig = {
   measurementId: "G-D3KPBVTBQD"
 };
 
- --- ไม่ต้องแก้ไขโค้ดด้านล่างนี้ ---
+// --- ไม่ต้องแก้ไขโค้ดด้านล่างนี้ ---
 
 // Import the functions you need from the SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
@@ -26,7 +26,6 @@ async function sha256(message) {
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    console.log(hashHex);
     return hashHex;
 }
 
@@ -48,39 +47,33 @@ async function performSearch() {
         let results = [];
 
         // --- Path 1: Search by Student ID (Fastest and most direct) ---
-        // Hash the input query to match the document ID in Firestore
         const hashedId = await sha256(cleanQuery);
         const docRef = doc(db, "students", hashedId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            // If a document is found by ID, add its records to the results
             results.push(...docSnap.data().records);
         }
 
         // --- Path 2: Search by Phone Number ---
-        // This requires a composite index in Firestore.
-        // Firestore will provide a link to create it in the console if it's missing.
+        // [แก้ไข] เปลี่ยนไป Query จากฟิลด์ "phone_numbers"
         const phoneWithZero = '0' + (cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery);
         const phoneWithoutZero = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
         
-        const phoneQuery = query(studentsCollection, where("records.phone", "array-contains-any", [phoneWithZero, phoneWithoutZero]));
+        const phoneQuery = query(studentsCollection, where("phone_numbers", "array-contains-any", [phoneWithZero, phoneWithoutZero]));
         const phoneSnapshot = await getDocs(phoneQuery);
         
         phoneSnapshot.forEach(doc => {
-            // Add records from documents found by phone number
             results.push(...doc.data().records);
         });
 
         // --- Final Step: Filter out duplicates and show results ---
-        // This handles cases where a record might be found by both ID and phone
         const uniqueResults = Array.from(new Map(results.map(item => [item.student_id, item])).values());
 
         showResults(uniqueResults);
 
     } catch (error) {
         console.error("Error searching data: ", error);
-        // Provide helpful feedback if the error is due to a missing index
         if (error.code === 'failed-precondition') {
             container.innerHTML = `<div class="result"><p>เกิดข้อผิดพลาด: จำเป็นต้องสร้าง Index ใน Firestore เพื่อให้ค้นหาด้วยเบอร์โทรศัพท์ได้</p><p style="font-size:14px; color:#ffdddd;">กรุณาเปิด Console (กด F12) และคลิกที่ลิงก์ในข้อความ Error เพื่อสร้าง Index โดยอัตโนมัติ หลังจากสร้างแล้ว กรุณารอสักครู่แล้วลองอีกครั้ง</p></div>`;
         } else {
