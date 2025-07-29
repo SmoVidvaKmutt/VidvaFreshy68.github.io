@@ -13,70 +13,73 @@ const firebaseConfig = {
 
 // Import the functions you need from the SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const studentsCollection = collection(db, "students");
 
+// --- Helper function to compute SHA-256 hash ---
+async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+}
+
 // --- Search Function (Queries Firestore) ---
 async function performSearch() {
     const rawQuery = document.getElementById('query').value.trim();
     if (!rawQuery) {
-        alert("กรุณากรอกข้อมูลเพื่อค้นหา (รหัสนักศึกษา, ชื่อ หรือเบอร์โทรศัพท์)");
+        alert("กรุณากรอกข้อมูลเพื่อค้นหา (รหัสนักศึกษา หรือเบอร์โทรศัพท์)");
         return;
     }
 
     const cleanQuery = rawQuery.replace(/\s/g, '');
-    const lowerCaseQuery = cleanQuery.toLowerCase();
     
     // แสดงสถานะกำลังโหลด
     const container = document.getElementById('results-container');
     container.innerHTML = '<div class="result"><p>กำลังค้นหา...</p></div>';
 
     try {
-        // [แก้ไข] Firestore ไม่รองรับการค้นหาแบบ OR ในหลายฟิลด์โดยตรง
-        // เราจึงต้อง Query แยกกันแล้วนำผลลัพธ์มารวมกัน
-        
-        // Query ด้วยรหัสนักศึกษา
-        const idQuery = query(studentsCollection, where("records.student_id", "array-contains", cleanQuery));
-        
-        // Query ด้วยเบอร์โทรศัพท์ (ทั้งแบบมีและไม่มี 0 นำหน้า)
+        let results = [];
+
+        // --- 1. ค้นหาด้วยรหัสนักศึกษา (วิธีที่เร็วที่สุด) ---
+        // แปลงรหัสนักศึกษาที่กรอกเป็น Hash เพื่อใช้เป็น ID ในการค้นหาโดยตรง
+        const hash = await sha256(cleanQuery);
+        const docRef = doc(db, "students", hash);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            results.push(...docSnap.data().records);
+        }
+
+        // --- 2. ค้นหาด้วยเบอร์โทรศัพท์ ---
+        // หมายเหตุ: การค้นหานี้จำเป็นต้องสร้าง Index ใน Firestore
+        // หากยังไม่ได้สร้าง Firestore จะแสดง Error ใน Console พร้อมลิงก์สำหรับสร้าง Index
         const phoneWithZero = '0' + (cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery);
         const phoneWithoutZero = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
         const phoneQuery = query(studentsCollection, where("records.phone", "array-contains-any", [phoneWithZero, phoneWithoutZero]));
-
-        // ดึงข้อมูลจาก Firestore
-        const idSnapshot = await getDocs(idQuery);
         const phoneSnapshot = await getDocs(phoneQuery);
-
-        let results = [];
-        // [แก้ไข] ดึงข้อมูลจาก field 'records'
-        idSnapshot.forEach(doc => results.push(...doc.data().records));
-        phoneSnapshot.forEach(doc => results.push(...doc.data().records));
-
-        // (การค้นหาด้วยชื่อเต็มๆ จะช้าและมีค่าใช้จ่ายสูงใน Firestore จึงแนะนำให้ใช้ 2 วิธีก่อน)
-
-        // กรองข้อมูลที่ซ้ำกันออก (กรณีที่เจอจากทั้งรหัสและเบอร์)
-        const uniqueResults = Array.from(new Map(results.map(item => [item.student_id, item])).values());
-
-        // กรองอีกครั้งเพื่อให้แน่ใจว่าผลลัพธ์ตรงกับคำค้นหา
-        const finalResults = uniqueResults.filter(student => {
-            const studentId = String(student.student_id).replace(/\s/g, '');
-            const fullName = (`${student.first_name}${student.last_name}`).toLowerCase().replace(/\s/g, '');
-            const dataPhoneNumber = String(student.phone).replace(/\s/g, '');
-            const coreDataPhone = dataPhoneNumber.startsWith('0') ? dataPhoneNumber.substring(1) : dataPhoneNumber;
-            const coreQueryPhone = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
-
-            return studentId === cleanQuery || fullName === lowerCaseQuery || coreDataPhone === coreQueryPhone;
+        phoneSnapshot.forEach(doc => {
+            results.push(...doc.data().records);
         });
 
-        showResults(finalResults);
+        // --- 3. กรองข้อมูลซ้ำออก ---
+        // (กรณีที่เจอจากทั้งรหัสและเบอร์ หรือมีข้อมูลซ้ำในชีต)
+        const uniqueResults = Array.from(new Map(results.map(item => [item.student_id, item])).values());
+
+        showResults(uniqueResults);
 
     } catch (error) {
         console.error("Error searching data: ", error);
-        container.innerHTML = '<div class="result"><p>เกิดข้อผิดพลาดในการค้นหา</p></div>';
+        // ตรวจจับ Error กรณีที่ยังไม่ได้สร้าง Index
+        if (error.code === 'failed-precondition') {
+            container.innerHTML = `<div class="result"><p>เกิดข้อผิดพลาด: จำเป็นต้องสร้าง Index ใน Firestore เพื่อให้ค้นหาด้วยเบอร์โทรศัพท์ได้</p><p style="font-size:14px; color:#ffdddd;">กรุณาเปิด Console (กด F12) และคลิกที่ลิงก์ในข้อความ Error เพื่อสร้าง Index โดยอัตโนมัติ</p></div>`;
+        } else {
+            container.innerHTML = '<div class="result"><p>เกิดข้อผิดพลาดในการค้นหา</p></div>';
+        }
     }
 }
 
@@ -117,22 +120,5 @@ document.getElementById('query').addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
         event.preventDefault();
         performSearch();
-    }
-});
-
-// --- 1. Fetch data when the page loads ---
-window.addEventListener('DOMContentLoaded', async () => {
-    try {
-        // ... (โค้ดดึงข้อมูล) ...
-        const jsonData = await response.json();
-
-        studentData = Object.values(jsonData).flat();
-
-        // [เพิ่มโค้ด 2 บรรทัดนี้เข้าไป]
-        console.log("Data loaded successfully. Total records:", studentData.length);
-        console.log(studentData); // แสดงข้อมูลทั้งหมดที่ดึงมา
-
-    } catch (error) {
-        // ... (โค้ดจัดการ error) ...
     }
 });
