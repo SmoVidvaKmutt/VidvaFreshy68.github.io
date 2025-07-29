@@ -9,7 +9,7 @@ const firebaseConfig = {
   measurementId: "G-D3KPBVTBQD"
 };
 
-// --- ไม่ต้องแก้ไขโค้ดด้านล่างนี้ ---
+ --- ไม่ต้องแก้ไขโค้ดด้านล่างนี้ ---
 
 // Import the functions you need from the SDKs
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
@@ -20,16 +20,17 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const studentsCollection = collection(db, "students");
 
-// --- Helper function to compute SHA-256 hash ---
+// --- Helper function to compute SHA-256 hash on the client ---
 async function sha256(message) {
     const msgBuffer = new TextEncoder().encode(message);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    console.log(hashHex);
     return hashHex;
 }
 
-// --- Search Function (Queries Firestore) ---
+// --- Search Function (Securely queries Firestore) ---
 async function performSearch() {
     const rawQuery = document.getElementById('query').value.trim();
     if (!rawQuery) {
@@ -39,44 +40,49 @@ async function performSearch() {
 
     const cleanQuery = rawQuery.replace(/\s/g, '');
     
-    // แสดงสถานะกำลังโหลด
+    // Display loading message
     const container = document.getElementById('results-container');
     container.innerHTML = '<div class="result"><p>กำลังค้นหา...</p></div>';
 
     try {
         let results = [];
 
-        // --- 1. ค้นหาด้วยรหัสนักศึกษา (วิธีที่เร็วที่สุด) ---
-        // แปลงรหัสนักศึกษาที่กรอกเป็น Hash เพื่อใช้เป็น ID ในการค้นหาโดยตรง
-        const hash = await sha256(cleanQuery);
-        const docRef = doc(db, "students", hash);
+        // --- Path 1: Search by Student ID (Fastest and most direct) ---
+        // Hash the input query to match the document ID in Firestore
+        const hashedId = await sha256(cleanQuery);
+        const docRef = doc(db, "students", hashedId);
         const docSnap = await getDoc(docRef);
+
         if (docSnap.exists()) {
+            // If a document is found by ID, add its records to the results
             results.push(...docSnap.data().records);
         }
 
-        // --- 2. ค้นหาด้วยเบอร์โทรศัพท์ ---
-        // หมายเหตุ: การค้นหานี้จำเป็นต้องสร้าง Index ใน Firestore
-        // หากยังไม่ได้สร้าง Firestore จะแสดง Error ใน Console พร้อมลิงก์สำหรับสร้าง Index
+        // --- Path 2: Search by Phone Number ---
+        // This requires a composite index in Firestore.
+        // Firestore will provide a link to create it in the console if it's missing.
         const phoneWithZero = '0' + (cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery);
         const phoneWithoutZero = cleanQuery.startsWith('0') ? cleanQuery.substring(1) : cleanQuery;
+        
         const phoneQuery = query(studentsCollection, where("records.phone", "array-contains-any", [phoneWithZero, phoneWithoutZero]));
         const phoneSnapshot = await getDocs(phoneQuery);
+        
         phoneSnapshot.forEach(doc => {
+            // Add records from documents found by phone number
             results.push(...doc.data().records);
         });
 
-        // --- 3. กรองข้อมูลซ้ำออก ---
-        // (กรณีที่เจอจากทั้งรหัสและเบอร์ หรือมีข้อมูลซ้ำในชีต)
+        // --- Final Step: Filter out duplicates and show results ---
+        // This handles cases where a record might be found by both ID and phone
         const uniqueResults = Array.from(new Map(results.map(item => [item.student_id, item])).values());
 
         showResults(uniqueResults);
 
     } catch (error) {
         console.error("Error searching data: ", error);
-        // ตรวจจับ Error กรณีที่ยังไม่ได้สร้าง Index
+        // Provide helpful feedback if the error is due to a missing index
         if (error.code === 'failed-precondition') {
-            container.innerHTML = `<div class="result"><p>เกิดข้อผิดพลาด: จำเป็นต้องสร้าง Index ใน Firestore เพื่อให้ค้นหาด้วยเบอร์โทรศัพท์ได้</p><p style="font-size:14px; color:#ffdddd;">กรุณาเปิด Console (กด F12) และคลิกที่ลิงก์ในข้อความ Error เพื่อสร้าง Index โดยอัตโนมัติ</p></div>`;
+            container.innerHTML = `<div class="result"><p>เกิดข้อผิดพลาด: จำเป็นต้องสร้าง Index ใน Firestore เพื่อให้ค้นหาด้วยเบอร์โทรศัพท์ได้</p><p style="font-size:14px; color:#ffdddd;">กรุณาเปิด Console (กด F12) และคลิกที่ลิงก์ในข้อความ Error เพื่อสร้าง Index โดยอัตโนมัติ หลังจากสร้างแล้ว กรุณารอสักครู่แล้วลองอีกครั้ง</p></div>`;
         } else {
             container.innerHTML = '<div class="result"><p>เกิดข้อผิดพลาดในการค้นหา</p></div>';
         }
@@ -112,7 +118,7 @@ function showResults(data) {
     container.innerHTML = resultsHtml;
 }
 
-// ทำให้ performSearch เป็นฟังก์ชัน global ที่ HTML เรียกใช้ได้
+// Make performSearch a global function that HTML can call
 window.performSearch = performSearch;
 
 // Add event listener for 'Enter' key on the input field
