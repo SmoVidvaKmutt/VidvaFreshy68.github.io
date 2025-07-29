@@ -119,3 +119,20 @@ document.getElementById('query').addEventListener('keypress', function(event) {
         performSearch();
     }
 });
+
+// --- 1. Fetch data when the page loads ---
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // ... (โค้ดดึงข้อมูล) ...
+        const jsonData = await response.json();
+
+        studentData = Object.values(jsonData).flat();
+
+        // [เพิ่มโค้ด 2 บรรทัดนี้เข้าไป]
+        console.log("Data loaded successfully. Total records:", studentData.length);
+        console.log(studentData); // แสดงข้อมูลทั้งหมดที่ดึงมา
+
+    } catch (error) {
+        // ... (โค้ดจัดการ error) ...
+    }
+});
